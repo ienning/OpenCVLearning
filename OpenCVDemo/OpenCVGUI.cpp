@@ -61,10 +61,21 @@ int OpenCVGUIDemo::cannyImage(cv::Mat& inputImg, cv::Mat& outputImg, cv::Size ks
 
 int OpenCVGUIDemo::playVedio(cv::Mat& inputImg, cv::Mat& outputImg)
 {
-    imshow(std::string("原图腐蚀操作"), inputImg);
-    Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));
-    erode(inputImg, outputImg, element);
-    imshow("效果图腐蚀操作", outputImg);
+    //imshow(std::string("原图腐蚀操作"), inputImg);
+    //Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));
+    //erode(inputImg, outputImg, element);
+    //imshow("效果图腐蚀操作", outputImg);
     //waitKey(0);
+    //VideoCapture capture(0);
+    VideoCapture capture("D:/Data/cvTest/1/video.avi");
+    while (1)
+    {
+        cv::Mat frame;
+        capture >> frame;
+        if (frame.empty())
+            break;
+        imshow("读取视频", frame);
+        waitKey(30); // delay 30ms
+    }
     return 0;
 }

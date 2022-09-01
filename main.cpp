@@ -11,7 +11,8 @@ int main(int argc, const char** argv) {
     cv::Mat outImg;
     //openCVGUIDemo.erodeImage(img, outImg);
     //openCVGUIDemo.blurImage(img, outImg);
-    openCVGUIDemo.cannyImage(img, outImg);
-    cv::waitKey(0);
+    //openCVGUIDemo.cannyImage(img, outImg);
+    //cv::waitKey(0);
+    openCVGUIDemo.playVedio(img, outImg);
     return 0;
 }
