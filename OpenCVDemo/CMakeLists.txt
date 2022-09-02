@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.0.0)
 
 project(opencvDemoLIB)
-set( OpenCV_DIR "D:\\opencv\\opencv\\build")
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    set( OpenCV_DIR "D:\\opencv\\opencv\\build")
+endif()
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
