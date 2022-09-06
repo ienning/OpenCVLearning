@@ -67,7 +67,7 @@ int OpenCVGUIDemo::playVedio(cv::Mat& inputImg, cv::Mat& outputImg)
     //imshow("Ð§¹ûÍ¼¸¯Ê´²Ù×÷", outputImg);
     //waitKey(0);
     //VideoCapture capture(0);
-    VideoCapture capture("D:/Data/cvTest/1/video.avi");
+    VideoCapture capture("/home/ienning/Pictures/Data/cvTest/1/video.avi");
     while (1)
     {
         cv::Mat frame;
