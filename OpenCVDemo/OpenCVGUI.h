@@ -8,6 +8,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
+extern cv::RNG g_rng;
 class OpenCVGUIDemo
 {
 public:
@@ -20,6 +21,9 @@ public:
     int primaryMixImage();
     static void on_trackbar(int, void*);
     int sliderBar(); // 滑动条
+    static void on_MouseHandle(int event, int x, int y, int flags, void* param);
+    int mouseTracking();    // 鼠标跟踪操作
+    static int drawRectangle(cv::Mat& image, cv::Rect& rect);
 public:
     const int m_nMaxAlphaValue = 100;
     int m_nAlphaValueSilder;
@@ -28,6 +32,9 @@ public:
     cv::Mat m_srcImage1;
     cv::Mat m_srcImage2;
     cv::Mat m_srcImage;
+
+    cv::Rect m_rectangle;
+    bool m_bDrawingBox = false;
 
 private:
     cv::Mat m_originMat;

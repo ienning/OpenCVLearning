@@ -2,7 +2,9 @@
 #include <string>
 
 using namespace cv;
+//OpenCVGUIDemo::rng = RNG(12345);
 
+extern cv::RNG g_rng = cv::RNG(12345);
 OpenCVGUIDemo::OpenCVGUIDemo()
 {
     std::cout << "Hello OpenCVGUI ���Ի�" << std::endl;
@@ -150,3 +152,81 @@ int OpenCVGUIDemo::sliderBar()
     on_trackbar(m_nAlphaValueSilder, this);
     return 0;
 }
+
+int OpenCVGUIDemo::mouseTracking()
+{
+    m_rectangle = Rect(-1, -1, 0, 0);
+    Mat tempImage;
+    m_srcImage = Mat(600, 800, CV_8UC3);
+    m_srcImage.copyTo(tempImage);
+    //m_rectangle = Rect(-1, -1, 0, 0);
+    m_srcImage = Scalar::all(0);
+    
+    // 2. 设置鼠标操作回调函数
+    namedWindow(WINDOW_NAME);
+    //setMouseCallback(WINDOW_NAME, on_MouseHandle, (void*)&srcImage);
+    setMouseCallback(WINDOW_NAME, on_MouseHandle, this);
+
+    // 3. 程序主循环，当进行回执的标识符为真时，进行绘制
+    while (1)
+    {
+        m_srcImage.copyTo(tempImage);
+        if (m_bDrawingBox)
+            drawRectangle(tempImage, m_rectangle);
+        imshow (WINDOW_NAME, tempImage);
+        if (waitKey(10) == 27)
+            break;
+    }
+    return 0;
+
+}
+
+void OpenCVGUIDemo::on_MouseHandle(int event, int x, int y, int flags, void* param)
+{
+    OpenCVGUIDemo* cvDemo = (OpenCVGUIDemo*)param;
+    Mat& image = cvDemo->m_srcImage;
+    switch (event)
+    {
+    case EVENT_MOUSEMOVE:
+    {
+        if (cvDemo->m_bDrawingBox)
+        {
+            cvDemo->m_rectangle.width = x-cvDemo->m_rectangle.x;
+            cvDemo->m_rectangle.height = y-cvDemo->m_rectangle.y;
+        }
+        break;
+    }
+    case EVENT_LBUTTONDOWN:
+    {
+        cvDemo->m_bDrawingBox = true;
+        cvDemo->m_rectangle = Rect(x, y, 0, 0); // 记录起始点
+        break;
+    }
+    case EVENT_LBUTTONUP:
+    {
+        cvDemo->m_bDrawingBox = false;
+        if (cvDemo->m_rectangle.width < 0)
+        {
+            cvDemo->m_rectangle.x += cvDemo->m_rectangle.width;
+            cvDemo->m_rectangle.width *= -1;
+        }
+        if (cvDemo->m_rectangle.height < 0)
+        {
+            cvDemo->m_rectangle.y += cvDemo->m_rectangle.height;
+            cvDemo->m_rectangle.height *= -1;
+        }
+        drawRectangle(image, cvDemo->m_rectangle);
+    }
+    
+    default:
+        break;
+    }
+}
+
+int OpenCVGUIDemo::drawRectangle(Mat& image, Rect& rect)
+{
+    rectangle(image, rect.tl(), rect.br(), Scalar(g_rng.uniform(0, 255), 
+    g_rng.uniform(0, 255), g_rng.uniform(0, 255))); // 随机颜色
+    return 0;
+}
+

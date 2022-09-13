@@ -20,8 +20,9 @@ int main(int argc, const char** argv) {
     //getcwd(path, 255);
     //std::cout << "path: " << path << std::endl;
     //openCVGUIDemo.primaryMixImage();
-    openCVGUIDemo.sliderBar();
-    cv::waitKey(0);
+    //openCVGUIDemo.sliderBar();
+    openCVGUIDemo.mouseTracking();
+    //cv::waitKey(0);
     //openCVGUIDemo.playVedio(img, outImg);
     return 0;
 }
