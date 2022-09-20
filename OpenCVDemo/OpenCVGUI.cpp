@@ -4,7 +4,7 @@
 using namespace cv;
 //OpenCVGUIDemo::rng = RNG(12345);
 
-extern cv::RNG g_rng = cv::RNG(12345);
+cv::RNG g_rng = cv::RNG(12345);
 OpenCVGUIDemo::OpenCVGUIDemo()
 {
     std::cout << "Hello OpenCVGUI ���Ի�" << std::endl;
@@ -228,5 +228,91 @@ int OpenCVGUIDemo::drawRectangle(Mat& image, Rect& rect)
     rectangle(image, rect.tl(), rect.br(), Scalar(g_rng.uniform(0, 255), 
     g_rng.uniform(0, 255), g_rng.uniform(0, 255))); // 随机颜色
     return 0;
+}
+
+#define WINDOW_WIDTH 1000
+void OpenCVGUIDemo::DrawEllipse(cv::Mat img, double angle)
+{
+    int thickness = 2;
+    int lineType = 8;
+    ellipse(img,
+            Point(WINDOW_WIDTH/2, WINDOW_WIDTH/2),
+            Size(WINDOW_WIDTH/4, WINDOW_WIDTH/16),
+            angle,
+            0,
+            360,
+            Scalar(255, 129, 0),
+            thickness,
+            lineType
+    );
+    imshow(WINDOW_NAME, img);
+}
+
+bool OpenCVGUIDemo::ROI_AddImage()
+{
+    Mat srcImage1 = imread("../cvTest/5/dota_pa.jpg");
+    Mat logoImage = imread("../cvTest/5/dota_logo.jpg");
+    if (!srcImage1.data)
+    {
+        printf("读取srcImage1 错误！\n");
+        return false;
+    }
+    if (!logoImage.data)
+    {
+        printf("读取logoImage 错误！\n");
+        return false;
+    }
+    Mat imageROI1 = srcImage1(Rect(200, 250, logoImage.cols, logoImage.rows));
+    // [3]加载掩模（必须使用灰度图）
+    Mat mask = imread("../cvTest/5/dota_logo.jpg", 0);
+    logoImage.copyTo(imageROI1, mask);
+    namedWindow("使用ROI实现图像叠加实例窗口");
+    imshow("利用ROI实现图像叠加实例窗口", srcImage1);
+    return true;
+}
+
+int OpenCVGUIDemo::contrastAndBright()
+{
+    m_srcImage = imread("../cvTest/5/3_1.jpg");
+    if (!m_srcImage.data)
+    {
+        printf("读取图片错误，请确定目录下是否有imread函数指定图片存在！");
+        return -1;
+    }
+    m_destImage = Mat::zeros(m_srcImage.size(), m_srcImage.type());
+    m_nContrastValue = 80;
+    m_nBrightValue = 80;
+    namedWindow("【效果图窗口】", 1);
+    createTrackbar("对比度：", "【效果图窗口】", &m_nContrastValue, 300, on_ContrastAndBright, this);
+    createTrackbar("亮  度：", "【效果图窗口】", &m_nBrightValue, 200, on_ContrastAndBright, this);
+    on_ContrastAndBright(m_nContrastValue, this);
+    on_ContrastAndBright(m_nBrightValue, this);
+    while (char(waitKey(1)) != 'q')
+    {
+        
+    }
+    return 0;
+    
+}
+
+void OpenCVGUIDemo::on_ContrastAndBright(int value, void* point)
+{
+    OpenCVGUIDemo* demo = (OpenCVGUIDemo*) point;
+    namedWindow("【原始图像窗口】", 1);
+    for (int y = 0; y < demo->m_srcImage.rows; y++)
+    {
+        for (int x = 0; x < demo->m_srcImage.cols; x++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                demo->m_destImage.at<Vec3b>(y, x)[c] =
+                saturate_cast<uchar>((demo->m_nContrastValue*0.01)*(demo->m_srcImage.at<Vec3b>(y, x)[c])+
+                demo->m_nBrightValue);
+            }
+            
+        }
+        imshow("【原始图像窗口】", demo->m_srcImage);
+        imshow("【效果图窗口】", demo->m_destImage);
+    }
 }
 

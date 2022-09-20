@@ -24,6 +24,11 @@ public:
     static void on_MouseHandle(int event, int x, int y, int flags, void* param);
     int mouseTracking();    // 鼠标跟踪操作
     static int drawRectangle(cv::Mat& image, cv::Rect& rect);
+    void DrawEllipse(cv::Mat img, double angle);
+    bool ROI_AddImage();
+    static void on_ContrastAndBright(int, void*);
+    static void ShowHelpText();
+    int contrastAndBright();
 public:
     const int m_nMaxAlphaValue = 100;
     int m_nAlphaValueSilder;
@@ -35,6 +40,12 @@ public:
 
     cv::Rect m_rectangle;
     bool m_bDrawingBox = false;
+    
+    // brightness and contrast
+    int m_nContrastValue;
+    int m_nBrightValue;
+    //uchar m_nBrightValue;
+    cv::Mat m_destImage;
 
 private:
     cv::Mat m_originMat;
