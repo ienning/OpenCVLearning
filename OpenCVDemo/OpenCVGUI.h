@@ -30,6 +30,8 @@ public:
     static void ShowHelpText();
     int contrastAndBright();
     int convertFourier();
+    int yamlRead();    // yaml读取
+    int yamlWrite();    // yaml写入
 public:
     const int m_nMaxAlphaValue = 100;
     int m_nAlphaValueSilder;

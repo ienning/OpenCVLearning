@@ -27,7 +27,9 @@ int main(int argc, const char** argv) {
     //openCVGUIDemo.DrawEllipse(img, angle);
     //openCVGUIDemo.ROI_AddImage();
     //openCVGUIDemo.contrastAndBright();
-    openCVGUIDemo.convertFourier();
+    //openCVGUIDemo.convertFourier();
+    openCVGUIDemo.yamlWrite();
+    openCVGUIDemo.yamlRead();
     cv::waitKey(0);
     //openCVGUIDemo.playVedio(img, outImg);
     return 0;
