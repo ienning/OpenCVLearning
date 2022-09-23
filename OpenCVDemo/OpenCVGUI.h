@@ -29,6 +29,7 @@ public:
     static void on_ContrastAndBright(int, void*);
     static void ShowHelpText();
     int contrastAndBright();
+    int convertFourier();
 public:
     const int m_nMaxAlphaValue = 100;
     int m_nAlphaValueSilder;

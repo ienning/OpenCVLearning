@@ -26,7 +26,8 @@ int main(int argc, const char** argv) {
     //openCVGUIDemo.mouseTracking();
     //openCVGUIDemo.DrawEllipse(img, angle);
     //openCVGUIDemo.ROI_AddImage();
-    openCVGUIDemo.contrastAndBright();
+    //openCVGUIDemo.contrastAndBright();
+    openCVGUIDemo.convertFourier();
     cv::waitKey(0);
     //openCVGUIDemo.playVedio(img, outImg);
     return 0;
