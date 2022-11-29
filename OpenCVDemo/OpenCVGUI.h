@@ -7,6 +7,8 @@
 #include <vector>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 extern cv::RNG g_rng;
 class OpenCVGUIDemo
@@ -65,15 +67,19 @@ private:
     int m_openCloseNum = 0;
     int m_erodeDilateNum = 0;
     int m_topBackHatNum = 0;
-    int m_elementShape = MORPH_RECT;
+    int m_elementShape = 0;
     cv::Mat m_morphologySrcImage;
     cv::Mat m_morphologyResultImage1;
     cv::Mat m_morphologyResultImage2;
     cv::Mat m_morphologyResultImage3;
 
-
+// 图像金字塔与图像尺寸缩放
 public:
-    
+    int pyramidAndResize(cv::Mat& img);
+private:
+    cv::Mat m_pyramidSrcImage;
+    cv::Mat m_pyramidDstImage;
+    cv::Mat m_pyramidTmpImage;
 
 public:
     const int m_nMaxAlphaValue = 100;

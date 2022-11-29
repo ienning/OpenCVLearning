@@ -577,44 +577,52 @@ void OpenCVGUIDemo::on_BilateraFilter(int, void* ptr)
 
 int OpenCVGUIDemo::morphologyTs(cv::Mat& image)
 {
+    m_elementShape = MORPH_RECT;
     if (image.empty())
     {
-        return;
+        return 0;
     }
     namedWindow("[原始图]");
-    imshow("[原始图]");
+    imshow("[原始图]", image);
     namedWindow("[开运算/闭运算]", 1);
     namedWindow("[腐蚀/膨胀]", 1);
     namedWindow("[顶帽/黑帽]", 1);
+    m_morphologySrcImage = image.clone();
     createTrackbar("迭代值", "[开运算/闭运算]", &m_openCloseNum,
-                   on_OpenClose, this);
+                   2*m_maxIterationNum+1, on_OpenClose, this);
     createTrackbar("迭代值", "[腐蚀/膨胀]", &m_erodeDilateNum,
-                   on_ErodeDilate, this);
-    createTrackbar("迭代值", "[顶帽/礼帽]", &m_topBackHatNum,
-                   on_TopBlackHat, this);
+                   2*m_maxIterationNum+1, on_ErodeDilate, this);
+    createTrackbar("迭代值", "[顶帽/黑帽]", &m_topBackHatNum,
+                   2*m_maxIterationNum+1, on_TopBlackHat, this);
     while (1)
     {
         int c;
         on_OpenClose(m_openCloseNum, this);
-        on_ErrodeDilate(m_erodeDilateNum, this);
+        on_ErodeDilate(m_erodeDilateNum, this);
         on_TopBlackHat(m_topBackHatNum, this);
 
+        // 获取按键
         c = waitKey(0);
         
+        // 按下Q或Esc程序退出
         if ((char) c== 'q' || (char)c == 27)
             break;
+        // 按下1使用椭圆结构元素
         if ((char)c == 49)
         {
             m_elementShape = MORPH_ELLIPSE;
         }
+        // 按下2使用矩形结构元素
         else if ((char)c == 50)
         {
             m_elementShape = MORPH_RECT;
         }
+        // 按下3使用十字结构元素
         else if ((char)c == 51)
         {
             m_elementShape = MORPH_CROSS;
         }
+        // 按下sapce使用椭圆，矩形，十字结构元素
         else if ((char)c == ' ')
         {
             m_elementShape = (m_elementShape+1)%3;
@@ -647,7 +655,7 @@ void OpenCVGUIDemo::on_OpenClose(int, void* ptr)
     imshow("[开运算/闭运算]", cvDemoPtr->m_morphologyResultImage1);
 }
 
-void OpenCVGUIDemo::on_ErodeDilate()
+void OpenCVGUIDemo::on_ErodeDilate(int, void* ptr)
 {
     OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
     int offset = cvDemoPtr->m_erodeDilateNum - cvDemoPtr->m_maxIterationNum;
@@ -664,12 +672,12 @@ void OpenCVGUIDemo::on_ErodeDilate()
         dilate(cvDemoPtr->m_morphologySrcImage, cvDemoPtr->m_morphologyResultImage2,
                      element);
     }
-    imshow("[腐蚀/膨胀]");
+    imshow("[腐蚀/膨胀]", cvDemoPtr->m_morphologyResultImage2);
     
 }
 
 // 礼帽和黑帽运算
-void OpenCVGUIDemo::on_TopBlackHat()
+void OpenCVGUIDemo::on_TopBlackHat(int, void* ptr)
 {
     OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
     int offset = cvDemoPtr->m_topBackHatNum - cvDemoPtr->m_maxIterationNum;
@@ -687,11 +695,84 @@ void OpenCVGUIDemo::on_TopBlackHat()
         morphologyEx(cvDemoPtr->m_morphologySrcImage, cvDemoPtr->m_morphologyResultImage3,
                      MORPH_BLACKHAT, element);
     }
-    imshow("[顶帽/黑帽]");
+    imshow("[顶帽/黑帽]", cvDemoPtr->m_morphologyResultImage3);
     
 }
 
 void OpenCVGUIDemo::ShowHelpTextx()
 {
 
+}
+
+int OpenCVGUIDemo::pyramidAndResize(cv::Mat& img)
+{
+    if (img.empty())
+    {
+        return -1;
+    }
+
+    m_pyramidSrcImage = img.clone();
+    m_pyramidTmpImage = m_pyramidSrcImage;
+    m_pyramidDstImage = m_pyramidSrcImage;
+
+    int key = 0;
+
+    while (1)
+    {
+        key = waitKey(9);
+        
+        // 根据Key值进行判断
+        switch (key)
+        {
+        case 27:    // 退出程序
+            return 0;
+            break;
+        case 'q':   // 退出程序
+            return 0;
+            break;
+        //=============================[图像放大处理]=============================
+        case 'a':
+            pyrUp(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols*2, m_pyramidTmpImage.rows*2));
+            printf(">检测到按键【A】被按下，开始进行基于【pyrUp】函数的图像放大：图片尺寸*2\n");
+            break;
+        case 'w':
+            resize(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols*2, m_pyramidTmpImage.rows*2));
+            printf(">检测到按键【W】被按下，开始进行基于【resize】函数的图像放大：图片尺寸*2\n");
+            break;
+        case '1':
+            resize(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols*2, m_pyramidTmpImage.rows*2));
+            printf(">检测到按键【1】被按下，开始进行基于【resize】函数的图像放大：图片尺寸*2\n");
+            break;
+        case '3':
+            pyrUp(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols*2, m_pyramidTmpImage.rows*2));
+            printf(">检测到按键【3】被按下，开始进行基于【pyrUp】函数的图像放大：图片尺寸*2\n");
+            break;
+        //=============================[图像缩小处理]=============================
+        case 'd':
+            pyrDown(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols/2, m_pyramidTmpImage.rows/2));
+            printf(">检测到按键【d】被按下，开始进行基于【pyrDown】函数的图像缩小：图片尺寸/2\n");
+            break;
+        case 's':
+            resize(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols*2, m_pyramidTmpImage.rows*2));
+            printf(">检测到按键【s】被按下，开始进行基于【resize】函数的图像缩小：图片缩小/2\n");
+            break;
+        case '2':
+            resize(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols*2, m_pyramidTmpImage.rows*2));
+            printf(">检测到按键【2】被按下，开始进行基于【resize】函数的图像缩小：图片缩小/2\n");
+            break;
+        case '4':
+            pyrDown(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols/2, m_pyramidTmpImage.rows/2));
+            printf(">检测到按键【d】被按下，开始进行基于【pyrDown】函数的图像缩小：图片尺寸/2\n");
+            break;
+        
+        default:
+            break;
+        }
+        
+        // 操作后的图像
+        imshow("[程序窗口]", m_pyramidDstImage);
+        m_pyramidTmpImage = m_pyramidDstImage;
+    }
+    return 0;
+    
 }

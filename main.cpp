@@ -31,8 +31,11 @@ int main(int argc, const char** argv) {
     //openCVGUIDemo.yamlRead();
 
     // Filter
-    cv::Mat img = cv::imread("../../cvTest/6/2.jpg");
-    openCVGUIDemo.filterEx(img);
+    //cv::Mat img = cv::imread("../../cvTest/6/2.jpg");
+    //openCVGUIDemo.filterEx(img);
+
+    //cv::Mat img = cv::imread("../../cvTest/6/5.jpg");
+    //openCVGUIDemo.morphologyTs(img);
 
     cv::waitKey(0);
     //openCVGUIDemo.playVedio(img, outImg);
