@@ -1,7 +1,6 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include "OpenCVDemo/OpenCVGUI.h"
-#include <unistd.h>
 
 int main(int argc, const char** argv) {
     //std::cout << "hello world!" << std::endl;
@@ -11,8 +10,8 @@ int main(int argc, const char** argv) {
     //cv::Mat img = cv::imread("D:/Data/cvTest/1/canny.jpg");
     //cv::Mat img = cv::imread("/home/ienning/Pictures/Data/cvTest/1/canny.jpg");
     //cv::Mat img = cv::imread("../cvTest/1/canny.jpg");
-    cv::Mat img = cv::imread("../cvTest/5/4_1.jpg");
-    double angle = 5;
+    //cv::Mat img = cv::imread("../cvTest/5/4_1.jpg");
+    //double angle = 5;
     //cv::Mat outImg;
     //std::cout << "test" << std::endl;
     //openCVGUIDemo.erodeImage(img, outImg);
@@ -28,8 +27,13 @@ int main(int argc, const char** argv) {
     //openCVGUIDemo.ROI_AddImage();
     //openCVGUIDemo.contrastAndBright();
     //openCVGUIDemo.convertFourier();
-    openCVGUIDemo.yamlWrite();
-    openCVGUIDemo.yamlRead();
+    //openCVGUIDemo.yamlWrite();
+    //openCVGUIDemo.yamlRead();
+
+    // Filter
+    cv::Mat img = cv::imread("../../cvTest/6/2.jpg");
+    openCVGUIDemo.filterEx(img);
+
     cv::waitKey(0);
     //openCVGUIDemo.playVedio(img, outImg);
     return 0;

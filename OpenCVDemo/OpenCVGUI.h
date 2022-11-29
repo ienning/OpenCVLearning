@@ -1,5 +1,5 @@
-/*!*
-    \file: 
+﻿/*!*
+    \file: OpenCVGUI.h
     \author: ienning
 */
 #ifndef OPENCVDEMO_OPENCVGUI_H__
@@ -32,6 +32,49 @@ public:
     int convertFourier();
     int yamlRead();    // yaml读取
     int yamlWrite();    // yaml写入
+
+public:
+    static void on_BoxFilter(int, void*);   // 边框过滤器
+    static void on_MeanBlur(int, void*);    // 均值过滤器
+    static void on_GaussianBlur(int, void*);    // 高斯过滤器
+    static void on_MedianBlur(int, void*);  // 中值过滤器
+    static void on_BilateraFilter(int, void*);  // 双边过滤器
+    int filterEx(cv::Mat& img);
+private:
+    int m_boxFilterValue;
+    int m_meanBlurValue;
+    int m_gaussianBlurValue;
+    int m_medianBlurValue;
+    int m_bilateralFilterValue;
+    cv::Mat m_filterSrcImage;
+    cv::Mat m_filterResultImage1;
+    cv::Mat m_filterResultImage2;
+    cv::Mat m_filterResultImage3;
+    cv::Mat m_filterResultImage4;
+    cv::Mat m_filterResultImage5;
+
+// 形态学练习
+public:
+    static void on_OpenClose(int, void*);   // 回调函数，开闭
+    static void on_ErodeDilate(int, void*); // 腐蚀和膨胀
+    static void on_TopBlackHat(int, void*); // 礼帽和黑帽
+    static void ShowHelpTextx();            // 帮助文字显示
+    int morphologyTs(cv::Mat& img);
+private:
+    int m_maxIterationNum = 10;
+    int m_openCloseNum = 0;
+    int m_erodeDilateNum = 0;
+    int m_topBackHatNum = 0;
+    int m_elementShape = MORPH_RECT;
+    cv::Mat m_morphologySrcImage;
+    cv::Mat m_morphologyResultImage1;
+    cv::Mat m_morphologyResultImage2;
+    cv::Mat m_morphologyResultImage3;
+
+
+public:
+    
+
 public:
     const int m_nMaxAlphaValue = 100;
     int m_nAlphaValueSilder;

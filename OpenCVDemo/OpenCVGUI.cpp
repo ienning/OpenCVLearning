@@ -1,4 +1,4 @@
-#include "OpenCVGUI.h"
+﻿#include "OpenCVGUI.h"
 #include <string>
 
 using namespace cv;
@@ -17,28 +17,28 @@ OpenCVGUIDemo::~OpenCVGUIDemo()
 
 int OpenCVGUIDemo::erodeImage(cv::Mat& inputImg, cv::Mat& outputImg, cv::Size ksize)
 {
-    imshow(std::string("ԭͼ��ʴ����"), inputImg);
+    imshow(std::string("腐蚀原图"), inputImg);
     Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));
     erode(inputImg, outputImg, element);
-    imshow("Ч��ͼ��ʴ����", outputImg);
+    imshow("腐蚀结果图", outputImg);
     //waitKey(0);
     return 0;
 }
 
 int OpenCVGUIDemo::blurImage(cv::Mat& inputImg, cv::Mat& outputImg, cv::Size ksize)
 {
-    imshow(std::string("ԭͼģ������"), inputImg);
+    imshow(std::string("模糊原图"), inputImg);
     Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));
     //erode(inputImg, outputImg, element);
     blur(inputImg, outputImg, ksize);
-    imshow("Ч��ͼģ������", outputImg);
+    imshow("模糊结果图", outputImg);
     //waitKey(0);
     return 0;
 }
 
 int OpenCVGUIDemo::cannyImage(cv::Mat& inputImg, cv::Mat& outputImg, cv::Size ksize)
 {
-    imshow(std::string("ԭͼ��Ե������"), inputImg);
+    imshow(std::string("模糊原图"), inputImg);
     cv::Mat transImg;
     if (inputImg.channels() == 3)
     {
@@ -56,17 +56,15 @@ int OpenCVGUIDemo::cannyImage(cv::Mat& inputImg, cv::Mat& outputImg, cv::Size ks
     Canny(blurImg, outputImg, 3, 9);
     //Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));
     //erode(inputImg, outputImg, element);
-    imshow("Ч��ͼ��Ե������", outputImg);
+    imshow("模糊输出", outputImg);
     //waitKey(0);
     return 0;
 }
 
 int OpenCVGUIDemo::playVedio(cv::Mat& inputImg, cv::Mat& outputImg)
 {
-    //imshow(std::string("ԭͼ��ʴ����"), inputImg);
     //Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));
     //erode(inputImg, outputImg, element);
-    //imshow("Ч��ͼ��ʴ����", outputImg);
     //waitKey(0);
     //VideoCapture capture(0);
     VideoCapture capture("/home/ienning/Pictures/Data/cvTest/1/video.avi");
@@ -76,7 +74,7 @@ int OpenCVGUIDemo::playVedio(cv::Mat& inputImg, cv::Mat& outputImg)
         capture >> frame;
         if (frame.empty())
             break;
-        imshow("��ȡ��Ƶ", frame);
+        imshow("视频", frame);
         waitKey(30); // delay 30ms
     }
     return 0;
@@ -89,7 +87,6 @@ int OpenCVGUIDemo::primaryMixImage()
         Mat girl = imread("../cvTest/3/girl.jpg");    
         namedWindow("[1]动漫图");   // 创建窗口
         imshow("[1]动漫图", girl);  // 显示窗口
-        
         // mix image
         Mat image = imread("../cvTest/3/dota.jpg", -1);
         Mat logo = imread("../cvTest/3/dota_logo.jpg");
@@ -392,7 +389,7 @@ int OpenCVGUIDemo::convertFourier()
 int OpenCVGUIDemo::yamlWrite()
 {
     // 初始化
-    FileStorage fs("../cvTest/5/test.yaml", FileStorage::WRITE);
+    FileStorage fs("../../cvTest/5/test.yaml", FileStorage::WRITE);
     // 开始文件写入
     fs << "frameCount" << 5;
     time_t rawTime;
@@ -431,7 +428,7 @@ int OpenCVGUIDemo::yamlRead()
         // change console font color
 
         // 初始化
-        FileStorage fs("../cvTest/5/test.yaml", FileStorage::READ);
+        FileStorage fs("../../cvTest/5/test.yaml", FileStorage::READ);
 
         // 第一种方法，对FileNode操作
         int frameCount = (int)fs["frameCount"];
@@ -475,5 +472,226 @@ int OpenCVGUIDemo::yamlRead()
         std::cerr << e.what() << '\n';
         return -1;
     }
+
+}
+
+int OpenCVGUIDemo::filterEx(cv::Mat& img)
+{
+    system("Color 5E");
+    
+    if (img.empty())
+        return -1;
+    m_boxFilterValue = 6;
+    m_meanBlurValue=  10;
+    m_gaussianBlurValue = 6;
+    m_medianBlurValue = 10;
+    m_bilateralFilterValue = 10;
+    m_filterSrcImage = img.clone();
+    m_filterResultImage1 = img.clone();
+    m_filterResultImage2 = img.clone();
+    m_filterResultImage3 = img.clone();
+    m_filterResultImage4 = img.clone();
+    m_filterResultImage5 = img.clone();
+    namedWindow("[<0>原图窗口]", 1);
+    imshow("[<0>原图窗口]", m_filterSrcImage);
+
+    //==============================方框滤波======================================
+    namedWindow("[<1>方框滤波]", 1);
+    createTrackbar("内核值：", "[<1>方框滤波]", &m_boxFilterValue, 50, on_BoxFilter, this);
+    on_BoxFilter(m_boxFilterValue, this);
+    imshow("[<1>方框滤波]", m_filterResultImage1);
+
+    //==============================均值滤波======================================
+    namedWindow("[<2>均值滤波]", 1);
+    createTrackbar("内核值：", "[<2>均值滤波]", &m_meanBlurValue, 50, on_MeanBlur, this);
+    on_MeanBlur(m_meanBlurValue, this);
+    imshow("[<2>均值滤波]", m_filterResultImage2);
+
+    //==============================高斯滤波======================================
+    namedWindow("[<3>高斯滤波]", 1);
+    createTrackbar("内核值：", "[<3>高斯滤波]", &m_gaussianBlurValue, 50, on_GaussianBlur, this);
+    on_GaussianBlur(m_gaussianBlurValue, this);
+    imshow("[<3>高斯滤波]", m_filterResultImage3);
+
+    //==============================中值滤波======================================
+    namedWindow("[<4>中值滤波]", 1);
+    createTrackbar("内核值：", "[<4>中值滤波]", &m_medianBlurValue, 50, on_MedianBlur, this);
+    on_MedianBlur(m_medianBlurValue, this);
+    imshow("[<4>中值滤波]", m_filterResultImage4);
+
+    //==============================双边滤波======================================
+    namedWindow("[<5>双边滤波]", 1);
+    createTrackbar("内核值：", "[<5>双边滤波]", &m_bilateralFilterValue, 50, on_BilateraFilter, this);
+    on_BilateraFilter(m_bilateralFilterValue, this);
+    imshow("[<5>双边滤波]", m_filterResultImage5);
+
+    while (char(waitKey(1)) != 'q')
+    {
+        /* code */
+    }
+    return 0;
+    
+}
+
+void OpenCVGUIDemo::on_BoxFilter(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    boxFilter(cvDemoPtr->m_filterSrcImage, cvDemoPtr->m_filterResultImage1, -1,
+              Size(cvDemoPtr->m_boxFilterValue+1, cvDemoPtr->m_boxFilterValue));
+    imshow("[<1>方框滤波]", cvDemoPtr->m_filterResultImage1);
+}
+
+void OpenCVGUIDemo::on_MeanBlur(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    blur(cvDemoPtr->m_filterSrcImage, cvDemoPtr->m_filterResultImage2,
+         Size(cvDemoPtr->m_meanBlurValue+1, cvDemoPtr->m_meanBlurValue+1));
+    imshow("[<2>均值滤波]", cvDemoPtr->m_filterResultImage2);
+}
+
+void OpenCVGUIDemo::on_GaussianBlur(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    GaussianBlur(cvDemoPtr->m_filterSrcImage, cvDemoPtr->m_filterResultImage3,
+                 Size(cvDemoPtr->m_gaussianBlurValue*2+1, cvDemoPtr->m_gaussianBlurValue*2+1),
+                 0, 0);
+    imshow("[<3>高斯滤波]", cvDemoPtr->m_filterResultImage3);
+}
+
+void OpenCVGUIDemo::on_MedianBlur(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    medianBlur(cvDemoPtr->m_filterSrcImage, cvDemoPtr->m_filterResultImage4,
+                cvDemoPtr->m_medianBlurValue*2+1);
+    imshow("[<4>中值滤波]", cvDemoPtr->m_filterResultImage4);
+}
+
+void OpenCVGUIDemo::on_BilateraFilter(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    bilateralFilter(cvDemoPtr->m_filterSrcImage, cvDemoPtr->m_filterResultImage5,
+                    cvDemoPtr->m_bilateralFilterValue, cvDemoPtr->m_bilateralFilterValue*2,
+                    cvDemoPtr->m_bilateralFilterValue/2);
+    imshow("[<5>双边滤波]", cvDemoPtr->m_filterResultImage5);
+}
+
+int OpenCVGUIDemo::morphologyTs(cv::Mat& image)
+{
+    if (image.empty())
+    {
+        return;
+    }
+    namedWindow("[原始图]");
+    imshow("[原始图]");
+    namedWindow("[开运算/闭运算]", 1);
+    namedWindow("[腐蚀/膨胀]", 1);
+    namedWindow("[顶帽/黑帽]", 1);
+    createTrackbar("迭代值", "[开运算/闭运算]", &m_openCloseNum,
+                   on_OpenClose, this);
+    createTrackbar("迭代值", "[腐蚀/膨胀]", &m_erodeDilateNum,
+                   on_ErodeDilate, this);
+    createTrackbar("迭代值", "[顶帽/礼帽]", &m_topBackHatNum,
+                   on_TopBlackHat, this);
+    while (1)
+    {
+        int c;
+        on_OpenClose(m_openCloseNum, this);
+        on_ErrodeDilate(m_erodeDilateNum, this);
+        on_TopBlackHat(m_topBackHatNum, this);
+
+        c = waitKey(0);
+        
+        if ((char) c== 'q' || (char)c == 27)
+            break;
+        if ((char)c == 49)
+        {
+            m_elementShape = MORPH_ELLIPSE;
+        }
+        else if ((char)c == 50)
+        {
+            m_elementShape = MORPH_RECT;
+        }
+        else if ((char)c == 51)
+        {
+            m_elementShape = MORPH_CROSS;
+        }
+        else if ((char)c == ' ')
+        {
+            m_elementShape = (m_elementShape+1)%3;
+        }
+        
+    }
+    return 0;
+    
+    
+}
+
+void OpenCVGUIDemo::on_OpenClose(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    int offset = cvDemoPtr->m_openCloseNum - cvDemoPtr->m_maxIterationNum;
+    int absolute_offset = offset >= 0 ? offset : -offset;
+    Mat element = getStructuringElement(cvDemoPtr->m_elementShape, 
+                                        Size(absolute_offset*2+1, absolute_offset*2+1),
+                                        Point(absolute_offset, absolute_offset));
+    if (offset < 0)
+    {
+        morphologyEx(cvDemoPtr->m_morphologySrcImage, cvDemoPtr->m_morphologyResultImage1,
+                     MORPH_OPEN, element);
+    }
+    else
+    {
+        morphologyEx(cvDemoPtr->m_morphologySrcImage, cvDemoPtr->m_morphologyResultImage1, 
+                     MORPH_CLOSE, element);
+    }
+    imshow("[开运算/闭运算]", cvDemoPtr->m_morphologyResultImage1);
+}
+
+void OpenCVGUIDemo::on_ErodeDilate()
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    int offset = cvDemoPtr->m_erodeDilateNum - cvDemoPtr->m_maxIterationNum;
+    int absoluteOffset = offset < 0 ? -offset : offset;
+    Mat element = getStructuringElement(cvDemoPtr->m_elementShape, Size(absoluteOffset*2+1, absoluteOffset*2+1),
+                                        Point(absoluteOffset, absoluteOffset));
+    if (offset < 0)
+    {
+        erode(cvDemoPtr->m_morphologySrcImage, cvDemoPtr->m_morphologyResultImage2,
+                     element);
+    }
+    else
+    {
+        dilate(cvDemoPtr->m_morphologySrcImage, cvDemoPtr->m_morphologyResultImage2,
+                     element);
+    }
+    imshow("[腐蚀/膨胀]");
+    
+}
+
+// 礼帽和黑帽运算
+void OpenCVGUIDemo::on_TopBlackHat()
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    int offset = cvDemoPtr->m_topBackHatNum - cvDemoPtr->m_maxIterationNum;
+    int absoluteOffset = offset < 0 ? -offset : offset;
+    Mat element = getStructuringElement(cvDemoPtr->m_elementShape, Size(absoluteOffset*2+1, absoluteOffset*2+1),
+                                        Point(absoluteOffset, absoluteOffset));
+    if (offset < 0)
+    {
+        /* code */
+        morphologyEx(cvDemoPtr->m_morphologySrcImage, cvDemoPtr->m_morphologyResultImage3,
+                      MORPH_TOPHAT, element);
+    }
+    else
+    {
+        morphologyEx(cvDemoPtr->m_morphologySrcImage, cvDemoPtr->m_morphologyResultImage3,
+                     MORPH_BLACKHAT, element);
+    }
+    imshow("[顶帽/黑帽]");
+    
+}
+
+void OpenCVGUIDemo::ShowHelpTextx()
+{
 
 }
