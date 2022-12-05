@@ -34,8 +34,25 @@ int main(int argc, const char** argv) {
     //cv::Mat img = cv::imread("../../cvTest/6/2.jpg");
     //openCVGUIDemo.filterEx(img);
 
+    // morphonoly
     //cv::Mat img = cv::imread("../../cvTest/6/5.jpg");
     //openCVGUIDemo.morphologyTs(img);
+
+    // pyramid and resize
+    //cv::Mat img = cv::imread("../../cvTest/6/8.jpg");
+    //openCVGUIDemo.pyramidAndResize(img);
+
+    // threshold ops
+    //cv::Mat img = cv::imread("../../cvTest/6/10.jpg");
+    //openCVGUIDemo.thresholdOps(img);
+
+    // EdgeDetection
+    //cv::Mat img = cv::imread("../../cvTest/7/1.jpg");
+    //openCVGUIDemo.edgeDetect(img);
+
+    // HoughTransform
+    cv::Mat img = cv::imread("../../cvTest/7/2.jpg");
+    openCVGUIDemo.HoughConvert(img);
 
     cv::waitKey(0);
     //openCVGUIDemo.playVedio(img, outImg);

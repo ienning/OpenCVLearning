@@ -81,6 +81,55 @@ private:
     cv::Mat m_pyramidDstImage;
     cv::Mat m_pyramidTmpImage;
 
+// 阈值化操作
+public:
+    int thresholdOps(cv::Mat& img);
+    static void on_Threshold(int, void*);
+
+private:
+    cv::Mat m_thresholdSrcImg;
+    cv::Mat m_thresholdGrayImg;
+    cv::Mat m_thresholdDstImg;
+    int m_thresholdType = 3;
+    int m_thresholdValue = 100;
+
+// 边缘检测综合
+public:
+    static void on_Canny(int, void*);
+    static void on_Sobel(int, void*);
+    void Scharr();
+    int edgeDetect(cv::Mat& img);
+private:
+    cv::Mat m_EdgeSrcImage;
+    cv::Mat m_EdgeSrcGrayImage;
+    cv::Mat m_EdgeDstImage;
+    cv::Mat m_cannyDetectedEdges;
+    // canny检测参数
+    int m_cannyLowThreshold = 1;
+    int m_cannyHighThreshold = 1;
+    // Sobel检测参数
+    cv::Mat m_sobelGradient_X;
+    cv::Mat m_sobelGradient_Y;
+    cv::Mat m_sobelAbsGradient_X;
+    cv::Mat m_sobelAbsGradient_Y;
+    int m_sobelKernelSize = 1;
+    // Scharr 滤波器参数
+    cv::Mat m_scharrGradient_X;
+    cv::Mat m_scharrGradient_Y;
+    cv::Mat m_scharrAbsGradient_X;
+    cv::Mat m_scharrAbsGradient_Y;
+
+// 霍夫变换综合
+public:
+    int HoughConvert(cv::Mat& img);
+    static void on_HoughLines(int, void*);
+private:
+    cv::Mat m_HoughSrcImage;
+    cv::Mat m_HoughDstImage;
+    cv::Mat m_HoughMidImage;
+    std::vector<cv::Vec4i> m_HoughLines;
+    int m_HoughThreshold = 100;
+
 public:
     const int m_nMaxAlphaValue = 100;
     int m_nAlphaValueSilder;

@@ -110,6 +110,7 @@ int OpenCVGUIDemo::primaryMixImage()
     }
     catch (std::exception& e)
     {
+        std::cout << "Exception: " << e.what() << std::endl;
         return -1;
     }
     return 0;
@@ -144,7 +145,7 @@ int OpenCVGUIDemo::sliderBar()
     m_nAlphaValueSilder = 70;
     namedWindow(WINDOW_NAME, 1);
     char trackbarName[50];
-    sprintf(trackbarName, "透明值 %d", m_nMaxAlphaValue);
+    sprintf_s(trackbarName, "透明值 %d", m_nMaxAlphaValue);
     createTrackbar(trackbarName, WINDOW_NAME, &m_nAlphaValueSilder, m_nMaxAlphaValue, on_trackbar, this);
     on_trackbar(m_nAlphaValueSilder, this);
     return 0;
@@ -394,7 +395,9 @@ int OpenCVGUIDemo::yamlWrite()
     fs << "frameCount" << 5;
     time_t rawTime;
     time(&rawTime);
-    fs << "CalibrationDate" << asctime(localtime(&rawTime));
+    char str[32];
+    asctime_s(str, sizeof(str), localtime(&rawTime));
+    fs << "CalibrationDate" << str;
     Mat cameraMatrix = (Mat_<double>(3, 3) << 1000, 0, 320, 0, 1000, 240, 0, 0, 1);
     Mat distCoeffs = (Mat_<double>(5, 1) << 0.1, 0.01, -0.001, 0, 0);
     fs << "cameraMatrix" << cameraMatrix << "distCoeffs" << distCoeffs;
@@ -753,11 +756,11 @@ int OpenCVGUIDemo::pyramidAndResize(cv::Mat& img)
             printf(">检测到按键【d】被按下，开始进行基于【pyrDown】函数的图像缩小：图片尺寸/2\n");
             break;
         case 's':
-            resize(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols*2, m_pyramidTmpImage.rows*2));
+            resize(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols/2, m_pyramidTmpImage.rows/2));
             printf(">检测到按键【s】被按下，开始进行基于【resize】函数的图像缩小：图片缩小/2\n");
             break;
         case '2':
-            resize(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols*2, m_pyramidTmpImage.rows*2));
+            resize(m_pyramidTmpImage, m_pyramidDstImage, Size(m_pyramidTmpImage.cols/2, m_pyramidTmpImage.rows/2));
             printf(">检测到按键【2】被按下，开始进行基于【resize】函数的图像缩小：图片缩小/2\n");
             break;
         case '4':
@@ -774,5 +777,202 @@ int OpenCVGUIDemo::pyramidAndResize(cv::Mat& img)
         m_pyramidTmpImage = m_pyramidDstImage;
     }
     return 0;
+    
+}
+
+#define THRESHOLD_WINDOWNAME "[程序窗口]"
+int OpenCVGUIDemo::thresholdOps(cv::Mat& img)
+{
+    if (img.empty())
+    {
+        return -1;
+    }
+    
+    cvtColor(img, m_thresholdGrayImg, COLOR_RGB2GRAY);
+    //m_thresholdSrcImg = img.clone();
+    // 创建窗口并显示原始图
+    namedWindow(THRESHOLD_WINDOWNAME, WINDOW_AUTOSIZE);
+
+    // 创建滑动条
+    createTrackbar("模式", THRESHOLD_WINDOWNAME, &m_thresholdType, 4, on_Threshold, this);
+    createTrackbar("阈值", THRESHOLD_WINDOWNAME, &m_thresholdValue, 255, on_Threshold, this);
+
+    on_Threshold(0, this);
+
+    while (1)
+    {
+        int key;
+        key = waitKey(20);
+        if ((char)key == 27)
+        {
+            break;
+        }
+    }
+    return 0;
+    
+}
+
+void OpenCVGUIDemo::on_Threshold(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemoPtr = (OpenCVGUIDemo*) ptr;
+    threshold(cvDemoPtr->m_thresholdGrayImg, cvDemoPtr->m_thresholdDstImg, cvDemoPtr->m_thresholdValue, 
+              255, cvDemoPtr->m_thresholdType);
+    
+    imshow(THRESHOLD_WINDOWNAME, cvDemoPtr->m_thresholdDstImg);
+}
+
+int OpenCVGUIDemo::edgeDetect(cv::Mat& img)
+{
+    try
+    {
+
+        m_EdgeSrcImage = img.clone();
+        if (m_EdgeSrcImage.empty())
+        {
+            return -1;
+        }
+        if (m_EdgeSrcImage.channels() == 3)
+        {
+            cv::cvtColor(m_EdgeSrcImage, m_EdgeSrcGrayImage, COLOR_BGR2GRAY);
+        }
+        else if (m_EdgeSrcImage.channels() == 1)
+        {
+            m_EdgeSrcGrayImage = m_EdgeSrcImage;            
+        }
+        else
+        {
+            std::cout << "input image channel is " << m_EdgeSrcImage.channels()
+            << std::endl;
+            return -2;
+        }
+        namedWindow("[原始图]");
+        imshow("[原始图]", m_EdgeSrcImage);
+        
+        m_EdgeDstImage = cv::Mat(m_EdgeSrcImage.size(), m_EdgeSrcImage.type());
+
+        namedWindow("[效果图]Canny边缘检测", WINDOW_AUTOSIZE);
+        namedWindow("[效果图]Sobel边缘检测", WINDOW_AUTOSIZE);
+
+        createTrackbar("参数值：", "[效果图]Canny边缘检测", &m_cannyLowThreshold, 120, on_Canny, this);
+        createTrackbar("参数值：", "[效果图]Sobel边缘检测", &m_sobelKernelSize, 3, on_Sobel, this);
+        
+        // 调用回调函数
+        on_Canny(0, this);
+        on_Sobel(0, this);
+
+        Scharr();
+
+        while (char(waitKey(1)) != 'q')
+        {
+            /* code */
+        }
+
+        return 0;
+        
+
+        /* code */
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return -3;
+    }
+    return 0;
+}
+
+void OpenCVGUIDemo::on_Canny(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemo = (OpenCVGUIDemo*) ptr;
+    // 降噪
+    blur(cvDemo->m_EdgeSrcGrayImage, cvDemo->m_cannyDetectedEdges, Size(3, 3));
+    Canny(cvDemo->m_cannyDetectedEdges, cvDemo->m_cannyDetectedEdges, cvDemo->m_cannyLowThreshold
+          , cvDemo->m_cannyLowThreshold*3, 3);
+    cvDemo->m_EdgeDstImage = Scalar::all(0);
+
+    // 使用canny算子输出的边缘图作为掩码，来将原图拷贝到目标图
+    cvDemo->m_EdgeSrcImage.copyTo(cvDemo->m_EdgeDstImage, cvDemo->m_cannyDetectedEdges);
+    imshow("[效果图]Canny边缘检测", cvDemo->m_EdgeDstImage);
+}
+
+void OpenCVGUIDemo::on_Sobel(int, void* ptr)
+{
+    OpenCVGUIDemo* cvDemo = (OpenCVGUIDemo*) ptr;
+    Sobel(cvDemo->m_EdgeSrcImage, cvDemo->m_sobelGradient_X, CV_16S, 1, 0,
+          2*cvDemo->m_sobelKernelSize+1, 1, 1, BORDER_DEFAULT);
+    convertScaleAbs(cvDemo->m_sobelGradient_X, cvDemo->m_sobelAbsGradient_X);
+    Sobel(cvDemo->m_EdgeSrcImage, cvDemo->m_sobelGradient_Y, CV_16S, 0, 1, 
+          cvDemo->m_sobelKernelSize*2+1, 1, 1, BORDER_DEFAULT);
+    convertScaleAbs(cvDemo->m_sobelGradient_Y, cvDemo->m_sobelAbsGradient_Y);
+    addWeighted(cvDemo->m_sobelAbsGradient_X, 0.5, cvDemo->m_sobelAbsGradient_Y, 0.5, 0, cvDemo->m_EdgeDstImage);
+    imshow("[效果图]Sobel边缘检测", cvDemo->m_EdgeDstImage);
+}
+
+void OpenCVGUIDemo::Scharr()
+{
+    // 求X方向梯度
+    cv::Scharr(m_EdgeSrcImage, m_scharrGradient_X, CV_16S, 0, 1, 0, BORDER_DEFAULT);
+    convertScaleAbs(m_scharrGradient_X, m_scharrAbsGradient_X);
+    
+    // 求Y方向梯度
+    cv::Scharr(m_EdgeSrcImage, m_scharrGradient_Y, CV_16S, 0, 1, 1, 0, BORDER_DEFAULT);
+    convertScaleAbs(m_scharrGradient_Y, m_scharrAbsGradient_Y);
+    
+    // 合并梯度
+    addWeighted(m_scharrAbsGradient_X, 0.5, m_scharrAbsGradient_Y, 0.5, 0, m_EdgeDstImage);
+    imshow("[效果图]Scharr滤波器", m_EdgeDstImage);
+}
+
+//
+int OpenCVGUIDemo::HoughConvert(cv::Mat &img)
+{
+    try
+    {
+        /* code */
+        if (img.empty())
+        {
+            return -1;
+        }
+
+        m_HoughSrcImage = img;
+        namedWindow("[效果图]", 1);
+        createTrackbar("值", "[效果图]", &m_HoughThreshold, 200, on_HoughLines, this);
+
+        Canny(m_HoughSrcImage, m_HoughMidImage, 50, 200, 3);
+        cvtColor(m_HoughMidImage, m_HoughDstImage, COLOR_GRAY2BGR);
+
+        on_HoughLines(m_HoughThreshold, this);
+        HoughLinesP(m_HoughMidImage, m_HoughLines, 1, CV_PI/180, 80, 50, 10);
+
+        imshow("[效果图]", m_HoughDstImage);
+
+        return 0;
+        
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return -2;
+    }
+
+    return 0;
+    
+}
+void OpenCVGUIDemo::on_HoughLines(int threshold, void * ptr)
+{
+    OpenCVGUIDemo* cvDemo = (OpenCVGUIDemo*) ptr;
+    Mat dstImage = cvDemo->m_HoughDstImage.clone();
+    Mat midImage = cvDemo->m_HoughMidImage.clone();
+
+    std::vector<Vec4i> myLines;
+    HoughLinesP(midImage, myLines, 1, CV_PI/180, cvDemo->m_HoughThreshold+1, 50, 10);
+    
+    // 遍历绘制每一条直线
+    for (size_t i = 0; i < myLines.size(); i++)
+    {
+        Vec4i l = myLines[i];
+        line(dstImage, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), Scalar(23, 180, 55), 1, LINE_AA);
+    }
+
+    imshow("[效果图]", dstImage);
     
 }
